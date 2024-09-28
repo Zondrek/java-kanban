@@ -5,16 +5,15 @@ import manager.model.SubTask;
 import manager.model.Task;
 import manager.model.TaskStatus;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TaskManager {
 
     private final Map<Integer, Task> tasks = new HashMap<>(); // <taskId, Task>
     private final Map<Integer, Epic> epics = new HashMap<>(); // <epicId, Epic>
-    private final Map<Integer, SubTask> subTasks = new HashMap<>();
+    private final Map<Integer, SubTask> subTasks = new HashMap<>(); // <subTaskId, SubTask>
+
+    private int index = 0;
 
     public Collection<Task> getTasks() {
         return List.copyOf(tasks.values());
@@ -27,6 +26,16 @@ public class TaskManager {
     public Collection<SubTask> getSubTasks() {
         return List.copyOf(subTasks.values());
     }
+
+    public Collection<SubTask> getSubTasks(int epicId) {
+        Epic epic = epics.get(epicId);
+        Collection<SubTask> result = new ArrayList<>();
+        for (int subTaskId : epic.getSubTasks()) {
+            result.add(subTasks.get(subTaskId));
+        }
+        return result;
+    }
+
 
     public Task getTask(int taskId) {
         return tasks.get(taskId);
@@ -42,7 +51,7 @@ public class TaskManager {
 
     public Task upsertTask(Task task) {
         if (task.getId() == null) {
-            task.setId(tasks.values().size());
+            task.setId(index++);
         }
         tasks.put(task.getId(), task);
         return task;
@@ -50,7 +59,7 @@ public class TaskManager {
 
     public Epic upsertEpic(Epic epic) {
         if (epic.getId() == null) {
-            epic.setId(epics.values().size());
+            epic.setId(index++);
         }
         epics.put(epic.getId(), epic);
         return epic;
@@ -58,7 +67,7 @@ public class TaskManager {
 
     public SubTask upsertSubTask(SubTask subTask) {
         if (subTask.getId() == null) {
-            subTask.setId(subTasks.values().size());
+            subTask.setId(index++);
         }
         subTasks.put(subTask.getId(), subTask);
         Epic epic = epics.get(subTask.getEpicId());
