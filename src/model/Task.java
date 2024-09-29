@@ -1,10 +1,10 @@
-package manager.model;
+package model;
 
 import java.util.Objects;
 
 public class Task {
 
-    private Integer id = null; // для метода upsert наиболее удобный вариант (nullable)
+    private Integer id; // для метода upsert наиболее удобный вариант (nullable)
     private String name;
     private String description;
     private final TaskStatus status;

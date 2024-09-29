@@ -1,8 +1,8 @@
 import manager.TaskManager;
-import manager.model.Epic;
-import manager.model.SubTask;
-import manager.model.Task;
-import manager.model.TaskStatus;
+import model.Epic;
+import model.SubTask;
+import model.Task;
+import model.TaskStatus;
 
 public class Main {
 
@@ -55,3 +55,6 @@ public class Main {
         System.out.println("Все подзадачи: " + taskManager.getSubTasks());
     }
 }
+
+
+

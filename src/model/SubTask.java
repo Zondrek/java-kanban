@@ -1,4 +1,4 @@
-package manager.model;
+package model;
 
 public class SubTask extends Task {
 
