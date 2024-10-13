@@ -22,6 +22,9 @@ public class Epic extends Task {
     }
 
     public void attachSubTask(int subTaskId) {
+        if (subTaskId == getId()) {
+            throw new IllegalArgumentException("SubTaskId can't be equal to epicId.");
+        }
         subTaskIds.add(subTaskId);
     }
 

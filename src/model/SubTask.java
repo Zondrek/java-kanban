@@ -19,6 +19,14 @@ public class SubTask extends Task {
     }
 
     @Override
+    public void setId(int id) {
+        if (epicId == id) {
+            throw new IllegalArgumentException("SubTaskId can't be equal to epicId.");
+        }
+        super.setId(id);
+    }
+
+    @Override
     public String toString() {
         return "SubTask{" +
                 "id=" + getId() +
