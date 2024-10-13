@@ -67,4 +67,17 @@ class TaskTest {
         task.setId(1);
         assertEquals(1, task.getId());
     }
+
+    @Test
+    void createStatus() {
+        Task task = new Task("name", "description");
+        assertEquals(TaskStatus.NEW, task.getStatus());
+    }
+
+    @Test
+    void changeStatus() {
+        Task task = new Task("name", "description");
+        Task taskWithNewStatus = new Task(task, TaskStatus.IN_PROGRESS);
+        assertEquals(TaskStatus.IN_PROGRESS, taskWithNewStatus.getStatus());
+    }
 }

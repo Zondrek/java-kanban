@@ -84,11 +84,11 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic upsertEpic(Epic epic) {
         if (epic.getId() == null) {
             epic.setId(index++);
+            epics.put(epic.getId(), epic);
         } else if (tasks.containsKey(epic.getId()) || subTasks.containsKey(epic.getId())) {
             return null;
         }
-        epics.put(epic.getId(), epic);
-        return epic;
+        return updateEpicStatus(epic);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subTasks.put(subTask.getId(), subTask);
         epic.attachSubTask(subTask.getId());
-        updateEpicStatus(epic.getId());
+        updateEpicStatus(epic);
         return subTask;
     }
 
@@ -148,22 +148,21 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTask != null) {
             Epic epic = getEpic(subTask.getEpicId());
             epic.detachSubTask(subTask.getId());
-            updateEpicStatus(epic.getId());
+            updateEpicStatus(epic);
         }
     }
 
-    @Override
-    public void updateEpicStatus(int epicId) {
-        Epic epic = epics.get(epicId);
-        TaskStatus newStatus = calculateStatus(epicId);
+    private Epic updateEpicStatus(Epic epic) {
+        TaskStatus newStatus = calculateStatus(epic);
         if (newStatus != epic.getStatus()) {
-            upsertEpic(new Epic(epic, newStatus));
+            Epic newEpic = new Epic(epic, newStatus);
+            epics.put(newEpic.getId(), newEpic);
+            return newEpic;
         }
+        return epic;
     }
 
-    @Override
-    public TaskStatus calculateStatus(int epicId) {
-        Epic epic = epics.get(epicId);
+    private TaskStatus calculateStatus(Epic epic) {
         int allCount = epic.getSubTasks().size();
         if (allCount == 0) {
             return TaskStatus.NEW;

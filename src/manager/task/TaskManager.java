@@ -42,9 +42,5 @@ public interface TaskManager {
 
     void removeSubTask(int subTaskId);
 
-    void updateEpicStatus(int epicId);
-
-    TaskStatus calculateStatus(int epicId);
-
     List<Task> getHistory();
 }
