@@ -49,7 +49,7 @@ class InMemoryHistoryManagerTest {
         assertEquals(10, historyManager.getHistory().size());
 
         tasks.removeFirst();
-        assertIterableEquals(tasks, historyManager.getHistory());
+        assertIterableEquals(tasks, historyManager.getHistory()); // проверка на порядок
     }
 
     private Task createRandomTask() {

@@ -46,4 +46,25 @@ class TaskTest {
         assertEquals(task, subTask);
         assertEquals(epic, subTask);
     }
+
+    @Test
+    void setName() {
+        Task task = new Task("name", "description");
+        task.setName("NewName");
+        assertEquals("NewName", task.getName());
+    }
+
+    @Test
+    void setDescription() {
+        Task task = new Task("name", "description");
+        task.setDescription("NewDescription");
+        assertEquals("NewDescription", task.getDescription());
+    }
+
+    @Test
+    void setId() {
+        Task task = new Task("name", "description");
+        task.setId(1);
+        assertEquals(1, task.getId());
+    }
 }
