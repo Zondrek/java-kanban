@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryTaskManagerTest {
 
     private InMemoryTaskManager taskManager;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @BeforeEach
     void beforeEach() {
