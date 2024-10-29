@@ -39,6 +39,7 @@ public class Main {
         taskManager.getTask(task1.getId());
         taskManager.getEpic(epic2.getId());
         taskManager.getSubTask(subTask3.getId());
+        taskManager.getTask(task1.getId());
 
         System.out.println("История: " + taskManager.getHistory());
 
