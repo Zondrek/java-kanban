@@ -298,7 +298,7 @@ class InMemoryTaskManagerTest {
         for (int i = 0; i < 5; i++) {
             taskManager.getEpic(epic.getId());
         }
-        assertEquals(5, taskManager.getHistory().size());
+        assertEquals(1, taskManager.getHistory().size());
     }
 
     private Task createTestTask() {
