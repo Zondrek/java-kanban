@@ -47,7 +47,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         return collectList();
     }
 
-
     private void putLast(Task task) {
         if (last == null) {
             last = new Node<>(null, null, task);
