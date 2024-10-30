@@ -39,6 +39,7 @@ public class Main {
         taskManager.getTask(task1.getId());
         taskManager.getEpic(epic2.getId());
         taskManager.getSubTask(subTask3.getId());
+        taskManager.getTask(task1.getId());
 
         System.out.println("История: " + taskManager.getHistory());
 
@@ -48,12 +49,14 @@ public class Main {
         taskManager.removeTask(task2.getId());
 
         printTasks(taskManager);
+        System.out.println("История: " + taskManager.getHistory());
 
         System.out.println("Полное удаление");
         taskManager.removeEpics();
         taskManager.removeTasks();
 
         printTasks(taskManager);
+        System.out.println("История: " + taskManager.getHistory());
     }
 
     private static void printTasks(TaskManager taskManager) {

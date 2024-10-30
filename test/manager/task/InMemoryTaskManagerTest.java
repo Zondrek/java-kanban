@@ -298,7 +298,54 @@ class InMemoryTaskManagerTest {
         for (int i = 0; i < 5; i++) {
             taskManager.getEpic(epic.getId());
         }
-        assertEquals(5, taskManager.getHistory().size());
+        assertEquals(1, taskManager.getHistory().size());
+    }
+
+    @Test
+    void removeAllTasksHistory() {
+        for (int i = 0; i < 5; i++) {
+            Task task = taskManager.upsertTask(createTestTask());
+            taskManager.getTask(task.getId());
+        }
+        taskManager.removeTasks();
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+    @Test
+    void removeAllEpicsHistory() {
+        for (int i = 0; i < 5; i++) {
+            Epic epic = taskManager.upsertEpic(createTestEpic());
+            taskManager.getTask(epic.getId());
+        }
+        taskManager.removeEpics();
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+    @Test
+    void subtasksDeletedAlongWithEpicHistory() {
+        Epic epic = taskManager.upsertEpic(createTestEpic());
+        taskManager.getEpic(epic.getId());
+
+        SubTask subTask1 = taskManager.upsertSubTask(createTestSubTask(epic.getId()));
+        taskManager.getSubTask(subTask1.getId());
+
+        SubTask subTask2 = taskManager.upsertSubTask(createTestSubTask(epic.getId()));
+        taskManager.getSubTask(subTask2.getId());
+
+        taskManager.removeEpic(epic.getId());
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+    @Test
+    void removeAllSubTasksHistory() {
+        Epic epic = taskManager.upsertEpic(createTestEpic());
+        taskManager.getEpic(epic.getId());
+        for (int i = 0; i < 5; i++) {
+            SubTask subTask = taskManager.upsertSubTask(createTestSubTask(epic.getId()));
+            taskManager.getSubTask(subTask.getId());
+        }
+        taskManager.removeSubTasks();
+        assertEquals(1, taskManager.getHistory().size());
     }
 
     private Task createTestTask() {
