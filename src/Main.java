@@ -49,12 +49,14 @@ public class Main {
         taskManager.removeTask(task2.getId());
 
         printTasks(taskManager);
+        System.out.println("История: " + taskManager.getHistory());
 
         System.out.println("Полное удаление");
         taskManager.removeEpics();
         taskManager.removeTasks();
 
         printTasks(taskManager);
+        System.out.println("История: " + taskManager.getHistory());
     }
 
     private static void printTasks(TaskManager taskManager) {

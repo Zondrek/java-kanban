@@ -8,19 +8,19 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final HashMap<Integer, Node<Task>> history = new HashMap<>();
+    private final HashMap<Integer, Node> history = new HashMap<>();
 
-    private Node<Task> last;
+    private Node last;
 
-    private static class Node<T> {
-        Node<T> prev;
-        Node<T> next;
-        T value;
+    private static class Node {
+        Node prev;
+        Node next;
+        Task value;
 
-        public Node(Node<T> prev, Node<T> next, T value) {
+        public Node(Node prev, Node next, Task task) {
             this.prev = prev;
             this.next = next;
-            this.value = value;
+            this.value = task;
         }
     }
 
@@ -36,7 +36,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        Node<Task> oldNode = history.remove(id);
+        Node oldNode = history.remove(id);
         if (oldNode != null) {
             removeNode(oldNode);
         }
@@ -49,14 +49,14 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private void putLast(Task task) {
         if (last == null) {
-            last = new Node<>(null, null, task);
+            last = new Node(null, null, task);
         } else {
-            last.next = new Node<>(last, null, task);
+            last.next = new Node(last, null, task);
             last = last.next;
         }
     }
 
-    private void removeNode(Node<Task> node) {
+    private void removeNode(Node node) {
         if (last == node) {
             last = last.prev;
         }
@@ -70,7 +70,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private List<Task> collectList() {
         LinkedList<Task> result = new LinkedList<>();
-        for (Node<Task> node = last; node != null; node = node.prev) {
+        for (Node node = last; node != null; node = node.prev) {
             result.addFirst(node.value);
         }
         return result;
