@@ -4,6 +4,9 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import manager.Managers;
+import manager.exception.ManagerLoadException;
+import manager.exception.ManagerSaveException;
 import manager.history.HistoryManager;
 import model.Epic;
 import model.SubTask;
@@ -24,10 +27,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final File backedFile;
 
-    public FileBackedTaskManager(HistoryManager historyManager, File backedFile) {
+    private FileBackedTaskManager(HistoryManager historyManager, File backedFile) {
         super(historyManager);
         this.backedFile = backedFile;
-        updateInMemory();
+    }
+
+    public static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager manager = new FileBackedTaskManager(Managers.getDefaultHistory(), file);
+        loadFromFile(manager, file);
+        return manager;
     }
 
     @Override
@@ -92,28 +100,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             Stream<TaskDto> taskStream = Stream.of(getTasks(), getEpics(), getSubTasks())
                     .flatMap(Collection::stream)
                     .map(this::mapToDto);
-            StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
+            StatefulBeanToCsv<TaskDto> beanToCsv = new StatefulBeanToCsvBuilder<TaskDto>(writer).build();
             beanToCsv.write(taskStream);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException(e);
         }
     }
 
-    private void updateInMemory() {
-        try (Reader reader = Files.newBufferedReader(backedFile.toPath())) {
-            CsvToBean<TaskDto> csvToBean = new CsvToBeanBuilder(reader)
+    private static void loadFromFile(TaskManager manager, File file) {
+        try (Reader reader = Files.newBufferedReader(file.toPath())) {
+            CsvToBean<TaskDto> csvToBean = new CsvToBeanBuilder<TaskDto>(reader)
                     .withType(TaskDto.class)
                     .build();
             for (TaskDto taskDto : csvToBean.parse()) {
                 TaskType type = mapToType(taskDto.getType());
                 switch (type) {
-                    case EPIC -> upsertEpic(dtoToEpic(taskDto));
-                    case SUB_TASK -> upsertSubTask(dtoToSubTask(taskDto));
-                    case TASK -> upsertTask(dtoToTask(taskDto));
+                    case EPIC -> manager.upsertEpic(dtoToEpic(taskDto));
+                    case SUB_TASK -> manager.upsertSubTask(dtoToSubTask(taskDto));
+                    case TASK -> manager.upsertTask(dtoToTask(taskDto));
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ManagerLoadException(e);
         }
     }
 
@@ -129,19 +137,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         );
     }
 
-    private Task dtoToTask(TaskDto dto) {
+    private static Task dtoToTask(TaskDto dto) {
         Task task = new Task(dto.getName(), dto.getDescription());
         task.setId(dto.getId());
         return new Task(task, mapToStatus(dto.getStatus()));
     }
 
-    private SubTask dtoToSubTask(TaskDto dto) {
+    private static SubTask dtoToSubTask(TaskDto dto) {
         SubTask subTask = new SubTask(dto.getName(), dto.getDescription(), dto.getEpicId());
         subTask.setId(dto.getId());
         return new SubTask(subTask, mapToStatus(dto.getStatus()));
     }
 
-    private Epic dtoToEpic(TaskDto dto) {
+    private static Epic dtoToEpic(TaskDto dto) {
         Epic epic = new Epic(dto.getName(), dto.getDescription());
         epic.setId(dto.getId());
         return new Epic(epic, mapToStatus(dto.getStatus()));
@@ -151,7 +159,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return status.name();
     }
 
-    private TaskStatus mapToStatus(String status) {
+    private static TaskStatus mapToStatus(String status) {
         return TaskStatus.valueOf(status);
     }
 
@@ -169,7 +177,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return type.name();
     }
 
-    private TaskType mapToType(String type) {
+    private static TaskType mapToType(String type) {
         return TaskType.valueOf(type);
     }
 

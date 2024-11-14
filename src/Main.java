@@ -1,15 +1,18 @@
-import manager.Managers;
+import manager.task.FileBackedTaskManager;
 import manager.task.TaskManager;
 import model.Epic;
 import model.SubTask;
 import model.Task;
 import model.TaskStatus;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Инициализация");
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = FileBackedTaskManager.loadFromFile(File.createTempFile("test", "txt"));
         Epic epic1 = taskManager.upsertEpic(new Epic("Эпик 1", "Эпик 1"));
         SubTask subTask1 = taskManager.upsertSubTask(
                 new SubTask("Эпик 1 Подзадача 1", "Эпик 1 Подзадача 1", epic1.getId())
@@ -41,21 +44,6 @@ public class Main {
         taskManager.getSubTask(subTask3.getId());
         taskManager.getTask(task1.getId());
 
-        System.out.println("История: " + taskManager.getHistory());
-
-        System.out.println("Частичное удаление");
-        taskManager.removeSubTask(subTask2.getId());
-        taskManager.removeEpic(epic2.getId());
-        taskManager.removeTask(task2.getId());
-
-        printTasks(taskManager);
-        System.out.println("История: " + taskManager.getHistory());
-
-        System.out.println("Полное удаление");
-        taskManager.removeEpics();
-        taskManager.removeTasks();
-
-        printTasks(taskManager);
         System.out.println("История: " + taskManager.getHistory());
     }
 
