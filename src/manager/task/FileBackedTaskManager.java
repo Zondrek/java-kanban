@@ -1,27 +1,21 @@
 package manager.task;
 
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import manager.Managers;
 import manager.exception.ManagerLoadException;
 import manager.exception.ManagerSaveException;
 import manager.history.HistoryManager;
+import manager.task.converter.TaskConverter;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import model.TaskStatus;
-import model.dto.TaskDto;
 import model.dto.TaskType;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.stream.Stream;
+
+import static manager.task.converter.TaskConverter.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -97,94 +91,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (Writer writer = new FileWriter(backedFile)) {
-            Stream<TaskDto> taskStream = Stream.of(getTasks(), getEpics(), getSubTasks())
+            Stream.of(getTasks(), getEpics(), getSubTasks())
                     .flatMap(Collection::stream)
-                    .map(this::mapToDto);
-            StatefulBeanToCsv<TaskDto> beanToCsv = new StatefulBeanToCsvBuilder<TaskDto>(writer).build();
-            beanToCsv.write(taskStream);
+                    .map(TaskConverter::taskToDto)
+                    .map(TaskConverter::dtoToString)
+                    .forEach(str -> {
+                        try {
+                            writer.append(str).append(System.lineSeparator());
+                            writer.flush();
+                        } catch (IOException ioe) {
+                            throw new UncheckedIOException(ioe);
+                        }
+                    });
         } catch (Exception e) {
             throw new ManagerSaveException(e);
         }
     }
 
     private static void loadFromFile(TaskManager manager, File file) {
-        try (Reader reader = Files.newBufferedReader(file.toPath())) {
-            CsvToBean<TaskDto> csvToBean = new CsvToBeanBuilder<TaskDto>(reader)
-                    .withType(TaskDto.class)
-                    .build();
-            for (TaskDto taskDto : csvToBean.parse()) {
-                TaskType type = mapToType(taskDto.getType());
-                switch (type) {
-                    case EPIC -> manager.upsertEpic(dtoToEpic(taskDto));
-                    case SUB_TASK -> manager.upsertSubTask(dtoToSubTask(taskDto));
-                    case TASK -> manager.upsertTask(dtoToTask(taskDto));
-                }
-            }
+        try (Stream<String> stream = Files.lines(file.toPath())) {
+            stream.map(TaskConverter::stringToDto)
+                    .forEach(dto -> {
+                        TaskType type = TaskConverter.stringToType(dto.type());
+                        switch (type) {
+                            case EPIC -> manager.upsertEpic(dtoToEpic(dto));
+                            case SUB_TASK -> manager.upsertSubTask(dtoToSubTask(dto));
+                            case TASK -> manager.upsertTask(dtoToTask(dto));
+                        }
+                    });
         } catch (Exception e) {
             throw new ManagerLoadException(e);
         }
-    }
-
-    private <T extends Task> TaskDto mapToDto(T task) {
-        TaskType type = classToType(task);
-        return new TaskDto(
-                task.getId(),
-                mapToString(type),
-                task.getName(),
-                mapToString(task.getStatus()),
-                task.getDescription(),
-                getEpicId(type, task)
-        );
-    }
-
-    private static Task dtoToTask(TaskDto dto) {
-        Task task = new Task(dto.getName(), dto.getDescription());
-        task.setId(dto.getId());
-        return new Task(task, mapToStatus(dto.getStatus()));
-    }
-
-    private static SubTask dtoToSubTask(TaskDto dto) {
-        SubTask subTask = new SubTask(dto.getName(), dto.getDescription(), dto.getEpicId());
-        subTask.setId(dto.getId());
-        return new SubTask(subTask, mapToStatus(dto.getStatus()));
-    }
-
-    private static Epic dtoToEpic(TaskDto dto) {
-        Epic epic = new Epic(dto.getName(), dto.getDescription());
-        epic.setId(dto.getId());
-        return new Epic(epic, mapToStatus(dto.getStatus()));
-    }
-
-    private String mapToString(TaskStatus status) {
-        return status.name();
-    }
-
-    private static TaskStatus mapToStatus(String status) {
-        return TaskStatus.valueOf(status);
-    }
-
-    private TaskType classToType(Task task) {
-        if (task instanceof Epic) {
-            return TaskType.EPIC;
-        } else if (task instanceof SubTask) {
-            return TaskType.SUB_TASK;
-        } else {
-            return TaskType.TASK;
-        }
-    }
-
-    private String mapToString(TaskType type) {
-        return type.name();
-    }
-
-    private static TaskType mapToType(String type) {
-        return TaskType.valueOf(type);
-    }
-
-    private <T extends Task> Integer getEpicId(TaskType type, T task) {
-        if (type == TaskType.SUB_TASK) {
-            return ((SubTask) task).getEpicId();
-        }
-        return null;
     }
 }

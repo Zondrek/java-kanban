@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         System.out.println("Инициализация");
-        TaskManager taskManager = FileBackedTaskManager.loadFromFile(File.createTempFile("test", "txt"));
+        TaskManager taskManager = FileBackedTaskManager.loadFromFile(File.createTempFile("test", ".csv"));
         Epic epic1 = taskManager.upsertEpic(new Epic("Эпик 1", "Эпик 1"));
         SubTask subTask1 = taskManager.upsertSubTask(
                 new SubTask("Эпик 1 Подзадача 1", "Эпик 1 Подзадача 1", epic1.getId())

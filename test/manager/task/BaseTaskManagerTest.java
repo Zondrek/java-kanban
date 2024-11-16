@@ -21,7 +21,7 @@ abstract class BaseTaskManagerTest {
     protected abstract TaskManager createInstance();
 
     @BeforeEach
-    void beforeEach() {
+    protected void beforeEach() {
         taskManager = createInstance();
     }
 
