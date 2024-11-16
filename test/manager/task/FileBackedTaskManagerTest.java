@@ -31,7 +31,7 @@ class FileBackedTaskManagerTest extends BaseTaskManagerTest {
     private static Task task;
     private static SubTask subTask;
 
-    // Tecтируем базовый функционал
+    // Для тестирования базового функционала
     @Override
     protected TaskManager createInstance() {
         try {
