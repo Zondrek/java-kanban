@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FileBackedTaskManagerTest extends BaseTaskManagerTest {
 
-    private File emptyFile = new File("test/resources/empty.csv");
-    private File allTypesFile = new File("test/resources/all_types.csv");
+    private final File emptyFile = new File("test/resources/empty.csv");
+    private final File allTypesFile = new File("test/resources/all_types.csv");
 
     private File tempFile;
     private FileBackedTaskManager tempManager;
@@ -97,7 +97,7 @@ class FileBackedTaskManagerTest extends BaseTaskManagerTest {
             assertEquals(TaskType.EPIC, TaskConverter.stringToType(epicDto.type()));
             assertEquals(epic, TaskConverter.dtoToEpic(epicDto));
 
-            assertEquals(TaskType.SUB_TASK, TaskConverter.stringToType(subTaskDto.type()));
+            assertEquals(TaskType.SUBTASK, TaskConverter.stringToType(subTaskDto.type()));
             assertEquals(subTask, TaskConverter.dtoToSubTask(subTaskDto));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -134,7 +134,7 @@ class FileBackedTaskManagerTest extends BaseTaskManagerTest {
             assertEquals(TaskType.EPIC, TaskConverter.stringToType(epicDto.type()));
             assertEquals(epic, TaskConverter.dtoToEpic(epicDto));
 
-            assertEquals(TaskType.SUB_TASK, TaskConverter.stringToType(subTaskDto.type()));
+            assertEquals(TaskType.SUBTASK, TaskConverter.stringToType(subTaskDto.type()));
             assertEquals(subTask, TaskConverter.dtoToSubTask(subTaskDto));
         } catch (IOException e) {
             throw new RuntimeException(e);

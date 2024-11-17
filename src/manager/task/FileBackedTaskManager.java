@@ -10,9 +10,13 @@ import model.SubTask;
 import model.Task;
 import model.dto.TaskType;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static manager.task.converter.TaskConverter.*;
@@ -90,33 +94,31 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
+        List<String> strList = Stream.of(getTasks(), getEpics(), getSubTasks())
+                .flatMap(Collection::stream)
+                .map(TaskConverter::taskToDto)
+                .map(TaskConverter::dtoToString)
+                .toList();
+
         try (Writer writer = new FileWriter(backedFile)) {
-            Stream.of(getTasks(), getEpics(), getSubTasks())
-                    .flatMap(Collection::stream)
-                    .map(TaskConverter::taskToDto)
-                    .map(TaskConverter::dtoToString)
-                    .forEach(str -> {
-                        try {
-                            writer.append(str).append(System.lineSeparator());
-                            writer.flush();
-                        } catch (IOException ioe) {
-                            throw new UncheckedIOException(ioe);
-                        }
-                    });
-        } catch (Exception e) {
+            for (String str : strList) {
+                writer.append(str).append(System.lineSeparator());
+                writer.flush();
+            }
+        } catch (IOException e) {
             throw new ManagerSaveException(e);
         }
     }
 
-    private static void loadFromFile(TaskManager manager, File file) {
+    private static void loadFromFile(FileBackedTaskManager manager, File file) {
         try (Stream<String> stream = Files.lines(file.toPath())) {
             stream.map(TaskConverter::stringToDto)
                     .forEach(dto -> {
                         TaskType type = TaskConverter.stringToType(dto.type());
                         switch (type) {
-                            case EPIC -> manager.upsertEpic(dtoToEpic(dto));
-                            case SUB_TASK -> manager.upsertSubTask(dtoToSubTask(dto));
-                            case TASK -> manager.upsertTask(dtoToTask(dto));
+                            case EPIC -> manager.epics.put(dto.id(), dtoToEpic(dto));
+                            case SUBTASK -> manager.subTasks.put(dto.id(), dtoToSubTask(dto));
+                            case TASK -> manager.tasks.put(dto.id(), dtoToTask(dto));
                         }
                     });
         } catch (Exception e) {

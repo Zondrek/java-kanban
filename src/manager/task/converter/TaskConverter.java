@@ -86,7 +86,7 @@ public class TaskConverter {
     }
 
     private static <T extends Task> Integer getEpicId(TaskType type, T task) {
-        if (type == TaskType.SUB_TASK) {
+        if (type == TaskType.SUBTASK) {
             return ((SubTask) task).getEpicId();
         }
         return null;
@@ -96,7 +96,7 @@ public class TaskConverter {
         if (task instanceof Epic) {
             return TaskType.EPIC;
         } else if (task instanceof SubTask) {
-            return TaskType.SUB_TASK;
+            return TaskType.SUBTASK;
         } else {
             return TaskType.TASK;
         }
