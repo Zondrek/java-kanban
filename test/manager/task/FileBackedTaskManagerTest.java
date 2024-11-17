@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 class FileBackedTaskManagerTest extends BaseTaskManagerTest {
 
     private final File emptyFile = new File("test/resources/empty.csv");
-    private final File allTypesFile = new File("test/resources/all_types.csv");
 
     private File tempFile;
     private FileBackedTaskManager tempManager;
