@@ -1,11 +1,7 @@
 package manager.task.converter;
 
-import model.Epic;
-import model.SubTask;
-import model.Task;
-import model.TaskStatus;
+import model.*;
 import model.dto.TaskDto;
-import model.dto.TaskType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,14 +36,13 @@ public class TaskConverter {
     }
 
     public static <T extends Task> TaskDto taskToDto(T task) {
-        TaskType type = classToType(task);
         return new TaskDto(
                 task.getId(),
-                typeToString(type),
+                typeToString(task.getType()),
                 task.getName(),
                 statusToString(task.getStatus()),
                 task.getDescription(),
-                getEpicId(type, task)
+                getEpicId(task.getType(), task)
         );
     }
 
@@ -90,15 +85,5 @@ public class TaskConverter {
             return ((SubTask) task).getEpicId();
         }
         return null;
-    }
-
-    private static TaskType classToType(Task task) {
-        if (task instanceof Epic) {
-            return TaskType.EPIC;
-        } else if (task instanceof SubTask) {
-            return TaskType.SUBTASK;
-        } else {
-            return TaskType.TASK;
-        }
     }
 }

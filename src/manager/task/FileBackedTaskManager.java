@@ -8,7 +8,7 @@ import manager.task.converter.TaskConverter;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import model.dto.TaskType;
+import model.TaskType;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -117,8 +117,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         TaskType type = TaskConverter.stringToType(dto.type());
                         switch (type) {
                             case EPIC -> manager.epics.put(dto.id(), dtoToEpic(dto));
-                            case SUBTASK -> manager.subTasks.put(dto.id(), dtoToSubTask(dto));
                             case TASK -> manager.tasks.put(dto.id(), dtoToTask(dto));
+                            case SUBTASK -> {
+                                manager.subTasks.put(dto.id(), dtoToSubTask(dto));
+                                Epic epic = manager.epics.get(dto.epicId());
+                                epic.attachSubTask(dto.id());
+                                manager.epics.put(epic.getId(), epic);
+                            }
                         }
                     });
         } catch (Exception e) {
