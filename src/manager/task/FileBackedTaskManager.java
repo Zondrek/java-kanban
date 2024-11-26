@@ -116,8 +116,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     .forEach(dto -> {
                         TaskType type = TaskConverter.stringToType(dto.type());
                         switch (type) {
-                            case EPIC -> manager.epics.put(dto.id(), dtoToEpic(dto));
                             case TASK -> manager.tasks.put(dto.id(), dtoToTask(dto));
+                            case EPIC -> {
+                                Epic epic = manager.calculateEpic(dtoToEpic(dto));
+                                manager.epics.put(dto.id(), epic);
+                            }
                             case SUBTASK -> {
                                 manager.subTasks.put(dto.id(), dtoToSubTask(dto));
                                 Epic epic = manager.epics.get(dto.epicId());

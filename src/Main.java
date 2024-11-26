@@ -7,6 +7,8 @@ import model.TaskStatus;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -15,19 +17,51 @@ public class Main {
         TaskManager taskManager = FileBackedTaskManager.loadFromFile(File.createTempFile("test", ".csv"));
         Epic epic1 = taskManager.upsertEpic(new Epic("Эпик 1", "Эпик 1"));
         SubTask subTask1 = taskManager.upsertSubTask(
-                new SubTask("Эпик 1 Подзадача 1", "Эпик 1 Подзадача 1", epic1.getId())
+                new SubTask(
+                        "Эпик 1 Подзадача 1",
+                        "Эпик 1 Подзадача 1",
+                        LocalDateTime.now(),
+                        Duration.ofMinutes(100),
+                        epic1.getId()
+                )
         );
         SubTask subTask2 = taskManager.upsertSubTask(
-                new SubTask("Эпик 1 Подзадача 2", "Эпик 1 Подзадача 2", epic1.getId())
+                new SubTask(
+                        "Эпик 1 Подзадача 2",
+                        "Эпик 1 Подзадача 2",
+                        LocalDateTime.now(),
+                        Duration.ofMinutes(400),
+                        epic1.getId()
+                )
         );
 
         Epic epic2 = taskManager.upsertEpic(new Epic("Эпик 2", "Эпик 2"));
         SubTask subTask3 = taskManager.upsertSubTask(
-                new SubTask("Эпик 2 Подзадача 1", "Эпик 2 Подзадача 1", epic2.getId())
+                new SubTask(
+                        "Эпик 2 Подзадача 1",
+                        "Эпик 2 Подзадача 1",
+                        LocalDateTime.now(),
+                        Duration.ofMinutes(600),
+                        epic2.getId()
+                )
         );
 
-        Task task1 = taskManager.upsertTask(new Task("Задача 1", "Залача 1"));
-        Task task2 = taskManager.upsertTask(new Task("Задача 2", "Задача 2"));
+        Task task1 = taskManager.upsertTask(
+                new Task(
+                        "Задача 1",
+                        "Залача 1",
+                        LocalDateTime.now(),
+                        Duration.ofMinutes(100)
+                )
+        );
+        Task task2 = taskManager.upsertTask(
+                new Task(
+                        "Задача 2",
+                        "Задача 2",
+                        LocalDateTime.now(),
+                        Duration.ofMinutes(100)
+                )
+        );
 
         printTasks(taskManager);
 

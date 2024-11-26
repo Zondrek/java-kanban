@@ -1,19 +1,35 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class Epic extends Task {
 
     private final Collection<Integer> subTaskIds;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
-        super(name, description);
+        super(name, description, null, null);
         this.subTaskIds = new HashSet<>();
     }
 
+    public Epic(Epic epic, LocalDateTime startTime, LocalDateTime endTime) {
+        super(
+                epic.getId(),
+                epic.getName(),
+                epic.getDescription(),
+                epic.getStatus(),
+                startTime,
+                Duration.between(startTime, endTime)
+        );
+        this.subTaskIds = epic.getSubTasks();
+        this.endTime = endTime;
+    }
+
     public Epic(Epic epic, TaskStatus status) {
-        super(epic.getId(), epic.getName(), epic.getDescription(), status);
+        super(epic.getId(), epic.getName(), epic.getDescription(), status, epic.getStartTime(), epic.getDuration());
         this.subTaskIds = epic.getSubTasks();
     }
 
@@ -39,6 +55,11 @@ public class Epic extends Task {
 
     public void detachAllSubTasks() {
         subTaskIds.clear();
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     @Override
