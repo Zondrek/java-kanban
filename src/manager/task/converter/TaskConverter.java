@@ -25,8 +25,8 @@ public class TaskConverter {
                 strArr.get(2),
                 strArr.get(3),
                 strArr.get(4),
-                Long.parseLong(strArr.get(5)),
-                Long.parseLong(strArr.get(6)),
+                strArr.get(5).isBlank() ? null : Long.parseLong(strArr.get(5)),
+                strArr.get(6).isBlank() ? null : Long.parseLong(strArr.get(6)),
                 strArr.get(7).isBlank() ? null : Integer.valueOf(strArr.get(7))
         );
     }
@@ -40,8 +40,8 @@ public class TaskConverter {
                 dto.name(),
                 dto.status(),
                 dto.description(),
-                dto.startDate(),
-                dto.duration(),
+                dto.startDate() == null ? "" : dto.startDate(),
+                dto.duration() == null ? "" : dto.duration(),
                 dto.epicId() == null ? "" : dto.epicId()
         );
     }

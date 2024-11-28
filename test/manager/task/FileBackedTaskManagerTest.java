@@ -74,4 +74,25 @@ class FileBackedTaskManagerTest extends BaseTaskManagerTest {
         assertIterableEquals(manager.getEpics(), tempManager.getEpics());
         assertIterableEquals(manager.getSubTasks(), tempManager.getSubTasks());
     }
+
+    @Test
+    public void writeTaskAndLoadFile() {
+        tempManager.upsertTask(task);
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(tempFile);
+        assertIterableEquals(manager.getTasks(), tempManager.getTasks());
+    }
+
+    @Test
+    public void writeEpicAndLoadFile() {
+        tempManager.upsertEpic(epic);
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(tempFile);
+        assertIterableEquals(manager.getEpics(), tempManager.getEpics());
+    }
+
+    @Test
+    public void writeSubTaskAndLoadFile() {
+        tempManager.upsertSubTask(subTask);
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(tempFile);
+        assertIterableEquals(manager.getSubTasks(), tempManager.getSubTasks());
+    }
 }
