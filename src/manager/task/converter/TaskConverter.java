@@ -27,7 +27,7 @@ public class TaskConverter {
                 strArr.get(4),
                 Long.parseLong(strArr.get(5)),
                 Long.parseLong(strArr.get(6)),
-                strArr.get(7).isBlank() ? null : Integer.valueOf(strArr.get(5))
+                strArr.get(7).isBlank() ? null : Integer.valueOf(strArr.get(7))
         );
     }
 

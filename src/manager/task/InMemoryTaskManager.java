@@ -171,7 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected Epic calculateEpic(Epic epic) {
         // Расчитываем статус и меняем его если он изменился
         Epic result = epic;
-        TaskStatus newStatus = calculateStatus(epic);
+        TaskStatus newStatus = calculateStatus(result);
         if (newStatus != result.getStatus()) {
             result = new Epic(result, newStatus);
         }
@@ -179,7 +179,7 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime startTime = calculateStartTime(result).orElse(null);
         LocalDateTime endTime = calculateEndTime(result).orElse(null);
         if (startTime != result.getStartTime() || endTime != result.getEndTime()) {
-            result = new Epic(epic, startTime, endTime);
+            result = new Epic(result, startTime, endTime);
         }
         return result;
     }

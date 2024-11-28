@@ -22,7 +22,7 @@ public class Epic extends Task {
                 epic.getDescription(),
                 epic.getStatus(),
                 startTime,
-                Duration.between(startTime, endTime)
+                startTime == null || endTime == null ? null : Duration.between(startTime, endTime)
         );
         this.subTaskIds = epic.getSubTasks();
         this.endTime = endTime;

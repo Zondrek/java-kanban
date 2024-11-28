@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static util.TestTaskFabric.*;
 
 abstract class BaseTaskManagerTest {
 
@@ -349,43 +350,5 @@ abstract class BaseTaskManagerTest {
         assertEquals(1, taskManager.getHistory().size());
     }
 
-    private Task createTestTask() {
-        return new Task(
-                "TestTaskName",
-                "TestTaskDescription"
-        );
-    }
 
-    private Task createTestTask(TaskStatus status) {
-        Task task = new Task(
-                "TestTaskName",
-                "TestTaskDescription"
-        );
-        return new Task(task, status);
-    }
-
-    private Epic createTestEpic() {
-        return new Epic(
-                "TestEpicName",
-                "TestEpicDescription"
-        );
-    }
-
-    private SubTask createTestSubTask(int epicId) {
-        return new SubTask(
-                "TestSubTaskName",
-                "TestSubTaskDescription",
-                epicId
-        );
-    }
-
-    private SubTask createTestSubTask(int epicId, TaskStatus status) {
-        SubTask subTask = new SubTask(
-                "TestSubTaskName",
-                "TestSubTaskDescription",
-                epicId
-        );
-
-        return new SubTask(subTask, status);
-    }
 }

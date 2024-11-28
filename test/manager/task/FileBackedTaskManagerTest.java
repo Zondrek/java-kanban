@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static util.TestTaskFabric.*;
 
 class FileBackedTaskManagerTest extends BaseTaskManagerTest {
 
@@ -36,11 +37,8 @@ class FileBackedTaskManagerTest extends BaseTaskManagerTest {
 
     @BeforeAll
     static void beforeAll() {
-        task = new Task("Task name", "Task description");
-        task.setId(2);
-
-        subTask = new SubTask("SubTask name", "SubTask description", 1);
-        subTask.setId(3);
+        task = createTestTask(2);
+        subTask = createTestSubTask(3, 1);
     }
 
     @BeforeEach
@@ -49,8 +47,7 @@ class FileBackedTaskManagerTest extends BaseTaskManagerTest {
         super.beforeEach();
 
         // Из-за необходимости пересоздания мапы внутри эпика, создаем перед каждым тестом
-        epic = new Epic("Epic name", "Epic description");
-        epic.setId(1);
+        epic = createTestEpic(1);
 
         try {
             tempFile = File.createTempFile("test", ".csv");
