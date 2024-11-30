@@ -583,14 +583,14 @@ abstract class BaseTaskManagerTest {
 
         Task task1 = taskManager.upsertTask(
                 createTestTask(
-                        LocalDateTime.of(2024, 11, 20, 10, 0),
+                        LocalDateTime.of(2024, 11, 20, 12, 0),
                         Duration.ofMinutes(1)
                 )
         );
 
         Task task2 = taskManager.upsertTask(
                 createTestTask(
-                        LocalDateTime.of(2024, 11, 20, 10, 0),
+                        LocalDateTime.of(2024, 11, 20, 12, 0),
                         Duration.ofMinutes(1)
                 )
         );
@@ -599,8 +599,8 @@ abstract class BaseTaskManagerTest {
 
         SubTask subTask1 = taskManager.upsertSubTask(
                 createTestSubTask(
-                        LocalDateTime.of(2024, 11, 20, 11, 0),
-                        Duration.ofMinutes(1),
+                        LocalDateTime.of(2024, 11, 20, 10, 0),
+                        Duration.ofMinutes(70),
                         epicId
                 )
         );
@@ -613,6 +613,6 @@ abstract class BaseTaskManagerTest {
                 )
         );
 
-        assertIterableEquals(List.of(task1, subTask1), taskManager.getPrioritizedTasks());
+        assertIterableEquals(List.of(subTask1, task1), taskManager.getPrioritizedTasks());
     }
 }
