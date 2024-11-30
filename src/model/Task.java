@@ -10,8 +10,8 @@ public class Task {
     private String name;
     private String description;
     private final TaskStatus status;
-    private LocalDateTime startTime;
-    private Duration duration;
+    private final LocalDateTime startTime;
+    private final Duration duration;
 
     public Task(
             String name,
@@ -31,6 +31,8 @@ public class Task {
         this.name = task.getName();
         this.description = task.getDescription();
         this.status = status;
+        this.duration = task.duration;
+        this.startTime = task.startTime;
     }
 
     protected Task(

@@ -20,8 +20,8 @@ public class Main {
                 new SubTask(
                         "Эпик 1 Подзадача 1",
                         "Эпик 1 Подзадача 1",
-                        LocalDateTime.now(),
-                        Duration.ofMinutes(100),
+                        LocalDateTime.of(2024, 11, 20, 10, 20),
+                        Duration.ofMinutes(10),
                         epic1.getId()
                 )
         );
@@ -29,8 +29,8 @@ public class Main {
                 new SubTask(
                         "Эпик 1 Подзадача 2",
                         "Эпик 1 Подзадача 2",
-                        LocalDateTime.now(),
-                        Duration.ofMinutes(400),
+                        LocalDateTime.of(2024, 11, 20, 10, 40),
+                        Duration.ofMinutes(40),
                         epic1.getId()
                 )
         );
@@ -40,8 +40,8 @@ public class Main {
                 new SubTask(
                         "Эпик 2 Подзадача 1",
                         "Эпик 2 Подзадача 1",
-                        LocalDateTime.now(),
-                        Duration.ofMinutes(600),
+                        LocalDateTime.of(2024, 11, 20, 11, 40),
+                        Duration.ofMinutes(60),
                         epic2.getId()
                 )
         );
@@ -50,15 +50,15 @@ public class Main {
                 new Task(
                         "Задача 1",
                         "Залача 1",
-                        LocalDateTime.now(),
-                        Duration.ofMinutes(100)
+                        LocalDateTime.of(2024, 11, 20, 13, 20),
+                        Duration.ofMinutes(10)
                 )
         );
         Task task2 = taskManager.upsertTask(
                 new Task(
                         "Задача 2",
                         "Задача 2",
-                        LocalDateTime.now(),
+                        LocalDateTime.of(2024, 11, 20, 13, 30),
                         Duration.ofMinutes(100)
                 )
         );

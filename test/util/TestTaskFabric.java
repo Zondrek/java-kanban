@@ -19,6 +19,15 @@ public class TestTaskFabric {
         );
     }
 
+    public static Task createTestTask(LocalDateTime start, Duration duration) {
+        return new Task(
+                "TestTaskName",
+                "TestTaskDescription",
+                start,
+                duration
+        );
+    }
+
     public static Task createTestTask(int id) {
         Task task = new Task(
                 "TestTaskName",
@@ -68,7 +77,6 @@ public class TestTaskFabric {
         return subTask;
     }
 
-
     public static SubTask createTestSubTask(int epicId) {
         return new SubTask(
                 "TestSubTaskName",
@@ -79,7 +87,39 @@ public class TestTaskFabric {
         );
     }
 
-    public static SubTask createTestSubTask(int epicId, TaskStatus status) {
+
+    public static SubTask createTestSubTask(
+            LocalDateTime start,
+            Duration duration,
+            int epicId
+    ) {
+        return new SubTask(
+                "TestSubTaskName",
+                "TestSubTaskDescription",
+                start,
+                duration,
+                epicId
+        );
+    }
+
+    public static SubTask createTestSubTask(
+            TaskStatus status,
+            LocalDateTime start,
+            Duration duration,
+            int epicId
+    ) {
+        SubTask subTask = new SubTask(
+                "TestSubTaskName",
+                "TestSubTaskDescription",
+                start,
+                duration,
+                epicId
+        );
+
+        return new SubTask(subTask, status);
+    }
+
+    public static SubTask createTestSubTask(TaskStatus status, int epicId) {
         SubTask subTask = new SubTask(
                 "TestSubTaskName",
                 "TestSubTaskDescription",
