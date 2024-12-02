@@ -4,16 +4,13 @@ import model.*;
 import model.dto.TaskDto;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
 public class TaskConverter {
-
-    private static final ZoneOffset DEFAULT_ZONE = ZoneOffset.UTC;
 
     public static TaskDto stringToDto(String str) {
         List<String> strArr = Arrays.stream(str.split(","))
@@ -25,7 +22,7 @@ public class TaskConverter {
                 strArr.get(2),
                 strArr.get(3),
                 strArr.get(4),
-                strArr.get(5).isBlank() ? null : Long.parseLong(strArr.get(5)),
+                strArr.get(5).isBlank() ? null : strArr.get(5),
                 strArr.get(6).isBlank() ? null : Long.parseLong(strArr.get(6)),
                 strArr.get(7).isBlank() ? null : Integer.valueOf(strArr.get(7))
         );
@@ -53,7 +50,7 @@ public class TaskConverter {
                 task.getName(),
                 statusToString(task.getStatus()),
                 task.getDescription(),
-                getIfNotNull(task.getStartTime(), TaskConverter::dateToMilli),
+                getIfNotNull(task.getStartTime(), TaskConverter::dateToString),
                 getIfNotNull(task.getDuration(), Duration::toMinutes),
                 getEpicId(task.getType(), task)
         );
@@ -63,7 +60,7 @@ public class TaskConverter {
         Task task = new Task(
                 dto.name(),
                 dto.description(),
-                getIfNotNull(dto.startDate(), TaskConverter::milliToDate),
+                getIfNotNull(dto.startDate(), TaskConverter::stringToDate),
                 getIfNotNull(dto.duration(), Duration::ofMinutes)
         );
         task.setId(dto.id());
@@ -71,11 +68,11 @@ public class TaskConverter {
     }
 
     public static SubTask dtoToSubTask(TaskDto dto) {
-        Long startDate = dto.startDate();
+        String startDate = dto.startDate();
         SubTask subTask = new SubTask(
                 dto.name(),
                 dto.description(),
-                startDate != null ? milliToDate(dto.startDate()) : null,
+                startDate != null ? stringToDate(startDate) : null,
                 Duration.ofMinutes(dto.duration()),
                 dto.epicId()
         );
@@ -112,12 +109,12 @@ public class TaskConverter {
         return null;
     }
 
-    private static long dateToMilli(LocalDateTime date) {
-        return date.toInstant(DEFAULT_ZONE).toEpochMilli();
+    private static String dateToString(LocalDateTime date) {
+        return DateTimeFormatter.ISO_DATE_TIME.format(date);
     }
 
-    private static LocalDateTime milliToDate(long milli) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(milli), DEFAULT_ZONE);
+    private static LocalDateTime stringToDate(String str) {
+        return LocalDateTime.parse(str, DateTimeFormatter.ISO_DATE_TIME);
     }
 
     private static <P, R> R getIfNotNull(P param, Function<P, R> getFun) {
