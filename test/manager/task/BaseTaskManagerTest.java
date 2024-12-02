@@ -16,12 +16,12 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 import static util.TestTaskFabric.*;
 
-abstract class BaseTaskManagerTest {
+abstract class BaseTaskManagerTest<T extends TaskManager> {
 
-    private TaskManager taskManager;
+    private T taskManager;
     private final Random random = new Random();
 
-    protected abstract TaskManager createInstance();
+    protected abstract T createInstance();
 
     @BeforeEach
     protected void beforeEach() {
