@@ -6,6 +6,8 @@ public record TaskDto(
         String name,
         String status,
         String description,
+        String startDate,
+        Long duration,
         Integer epicId
 ) {
 }

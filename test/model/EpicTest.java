@@ -6,41 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static util.TestTaskFabric.createTestEpic;
+import static util.TestTaskFabric.createTestSubTask;
 
 class EpicTest {
 
     @Test
     void instancesWithTheSameIdentifiersMustBeTheSame() {
-
-        Epic epic1 = new Epic("TestName1", "TestDescription1");
-        epic1.setId(1);
-
-        Epic epic2 = new Epic("TestName2", "TestDescription2");
-        epic2.setId(1);
-
+        Epic epic1 = createTestEpic(1);
+        Epic epic2 = createTestEpic(1);
         assertEquals(epic1, epic2);
     }
 
     @Test
     void instancesWithDifferentIdentifiersMustBeDifferent() {
-
-        Epic epic1 = new Epic("TestName1", "TestDescription1");
-        epic1.setId(1);
-
-        Epic epic2 = new Epic("TestName2", "TestDescription2");
-        epic2.setId(2);
-
+        Epic epic1 = createTestEpic(1);
+        Epic epic2 = createTestEpic(2);
         assertNotEquals(epic1, epic2);
     }
 
     @Test
     void theNumberAndOrderOfReturnedTasksIsEqualToTheAddedOne() {
         List<Integer> subTaskIds = new ArrayList<>(5);
-        Epic epic = new Epic("name", "description");
-        epic.setId(100);
+        Epic epic = createTestEpic(100);
         for (int i = 0; i < 5; i++) {
-            SubTask subTask = new SubTask("name" + i, "description" + i, 100);
-            subTask.setId(i);
+            SubTask subTask = createTestSubTask(i, 100);
             epic.attachSubTask(subTask.getId());
             subTaskIds.add(subTask.getId());
         }
@@ -50,21 +40,17 @@ class EpicTest {
 
     @Test
     void unableToAddEpicAsSubtask() {
-        Epic epic = new Epic("name", "description");
-        epic.setId(1);
-        SubTask subTask = new SubTask("name", "description", 0);
-        subTask.setId(1);
+        Epic epic = createTestEpic(1);
+        SubTask subTask = createTestSubTask(1, 0);
         assertThrows(IllegalArgumentException.class, () -> epic.attachSubTask(subTask.getId()));
     }
 
     @Test
     void deletingSubtasksDoesNotChangeTheOrder() {
         List<Integer> subTaskIds = new ArrayList<>(5);
-        Epic epic = new Epic("name", "description");
-        epic.setId(100);
+        Epic epic = createTestEpic(100);
         for (int i = 0; i < 5; i++) {
-            SubTask subTask = new SubTask("name" + i, "description" + i, 100);
-            subTask.setId(i);
+            SubTask subTask = createTestSubTask(i, 100);
             epic.attachSubTask(subTask.getId());
             subTaskIds.add(subTask.getId());
         }
@@ -82,11 +68,9 @@ class EpicTest {
 
     @Test
     void detachAllSubTasks() {
-        Epic epic = new Epic("name", "description");
-        epic.setId(100);
+        Epic epic = createTestEpic(100);
         for (int i = 0; i < 5; i++) {
-            SubTask subTask = new SubTask("name" + i, "description" + i, 100);
-            subTask.setId(i);
+            SubTask subTask = createTestSubTask(i,100);
             epic.attachSubTask(subTask.getId());
         }
         epic.detachAllSubTasks();

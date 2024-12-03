@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface TaskManager {
 
+    List<Task> getPrioritizedTasks();
+
     Collection<Task> getTasks();
 
     Collection<Epic> getEpics();

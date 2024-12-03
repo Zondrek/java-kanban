@@ -1,7 +1,5 @@
 package manager.history;
 
-import model.Epic;
-import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static util.TestTaskFabric.*;
 
 class InMemoryHistoryManagerTest {
 
@@ -157,42 +156,14 @@ class InMemoryHistoryManagerTest {
         int taskType = random.nextInt(3);
         switch (taskType) {
             case 1 -> {
-                return createEpicTask();
+                return createTestEpic(index++);
             }
             case 2 -> {
-                return createTestSubTask(random.nextInt());
+                return createTestSubTask(index++, random.nextInt());
             }
             default -> {
-                return createTestTask();
+                return createTestTask(index++);
             }
         }
-    }
-
-    private Task createTestTask() {
-        Task task = new Task(
-                "TestTaskName",
-                "TestTaskDescription"
-        );
-        task.setId(index++);
-        return task;
-    }
-
-    private Epic createEpicTask() {
-        Epic epic = new Epic(
-                "TestEpicName",
-                "TestEpicDescription"
-        );
-        epic.setId(index++);
-        return epic;
-    }
-
-    private SubTask createTestSubTask(int epicId) {
-        SubTask subTask = new SubTask(
-                "TestSubTaskName",
-                "TestSubTaskDescription",
-                epicId
-        );
-        subTask.setId(index++);
-        return subTask;
     }
 }
