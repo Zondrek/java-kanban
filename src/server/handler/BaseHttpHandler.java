@@ -19,6 +19,7 @@ abstract class BaseHttpHandler implements HttpHandler {
 
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     protected static final String DEFAULT_CONTENT_TYPE = "application/json;charset=utf-8";
+
     protected final TaskManager taskManager;
     protected final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter())

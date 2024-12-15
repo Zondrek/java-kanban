@@ -22,29 +22,30 @@ public class TaskHandler extends BaseHttpHandler {
         try {
             String method = exchange.getRequestMethod();
             String path = exchange.getRequestURI().getPath();
-            switch (method + path) {
-                case "GET/tasks" -> getTasks(exchange);
-                case "GET/tasks/{id}" -> getTaskById(exchange, path);
-                case "POST/tasks" -> createTask(exchange);
-                case "DELETE/tasks/{id}" -> deleteTask(exchange, path);
+            String[] pathParts = path.split("/");
+            switch (getEndpoint(method, pathParts)) {
+                case Endpoint.GET_TASKS -> getTasks(exchange);
+                case Endpoint.GET_TASK_BY_ID -> getTaskById(exchange, pathParts[2]);
+                case Endpoint.POST_TASK -> createTask(exchange);
+                case Endpoint.DELETE_TASK -> deleteTask(exchange, pathParts[2]);
                 default -> sendResponse(exchange, 404);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             sendResponse(exchange, e.getMessage(), 500);
         }
     }
 
-    private Optional<Integer> getTaskId(String path) {
-        String[] parts = path.split("/");
-        return parts.length > 1 ? Optional.of(Integer.parseInt(parts[1])) : Optional.empty();
+    private Optional<Integer> getTaskId(String id) {
+        return Optional.of(Integer.parseInt(id));
     }
 
     private void getTasks(HttpExchange exchange) throws IOException {
         sendResponse(exchange, gson.toJson(taskManager.getTasks()), 200);
     }
 
-    private void getTaskById(HttpExchange exchange, String path) throws IOException {
-        Optional<Integer> taskIdOpt = getTaskId(path);
+    private void getTaskById(HttpExchange exchange, String id) throws IOException {
+        Optional<Integer> taskIdOpt = getTaskId(id);
         if (taskIdOpt.isEmpty()) {
             sendResponse(exchange, 404);
             return;
@@ -75,8 +76,8 @@ public class TaskHandler extends BaseHttpHandler {
         }
     }
 
-    private void deleteTask(HttpExchange exchange, String path) throws IOException {
-        Optional<Integer> taskIdOpt = getTaskId(path);
+    private void deleteTask(HttpExchange exchange, String id) throws IOException {
+        Optional<Integer> taskIdOpt = getTaskId(id);
         if (taskIdOpt.isEmpty()) {
             sendResponse(exchange, 404);
             return;
@@ -86,19 +87,28 @@ public class TaskHandler extends BaseHttpHandler {
         sendResponse(exchange, 200);
     }
 
-//    private Endpoint getEndpoint(String requestPath, String requestMethod) {
-//        final String lastLocation = requestPath.substring(requestPath.lastIndexOf('/'));
-//        switch (requestMethod + lastLocation) {
-//            case "GET/posts":
-//                return Endpoint.GET_POSTS;
-//            case "GET/comments":
-//                return Endpoint.GET_COMMENTS;
-//            case "POST/comments":
-//                return Endpoint.POST_COMMENT;
-//            default:
-//                return Endpoint.UNKNOWN;
-//        }
-//    }
+    private Endpoint getEndpoint(String method, String[] pathParts) {
+        if (pathParts.length == 2) {
+            switch (method) {
+                case "GET" -> {
+                    return Endpoint.GET_TASKS;
+                }
+                case "POST" -> {
+                    return Endpoint.POST_TASK;
+                }
+            }
+        } else if (pathParts.length == 3) {
+            switch (method) {
+                case "GET" -> {
+                    return Endpoint.GET_TASK_BY_ID;
+                }
+                case "DELETE" -> {
+                    return Endpoint.DELETE_TASK;
+                }
+            }
+        }
+        return Endpoint.UNKNOWN;
+    }
 
-//    private enum Endpoint {GET_TASKS, GET_TASK_BY_ID, POST_TASK, DELETE_TASK, UNKNOWN}
+    private enum Endpoint {GET_TASKS, GET_TASK_BY_ID, POST_TASK, DELETE_TASK, UNKNOWN}
 }
