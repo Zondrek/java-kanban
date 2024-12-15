@@ -69,6 +69,7 @@ public class TaskHandler extends BaseHttpHandler {
             Task task = taskManager.upsertTask(taskFromRequest);
             if (task == null) {
                 sendResponse(exchange, 406);
+                return;
             }
             sendResponse(exchange, 201);
         } catch (JsonIOException | JsonSyntaxException e) {
