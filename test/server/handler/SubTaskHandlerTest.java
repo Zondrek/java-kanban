@@ -1,23 +1,15 @@
 package server.handler;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import manager.Managers;
-import manager.task.InMemoryTaskManager;
-import manager.task.TaskManager;
 import model.Epic;
 import model.SubTask;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.HttpTaskServer;
 import util.AssertUtil;
 import util.HttpUtil;
 import util.TestTaskFabric;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -28,27 +20,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static util.TestTaskFabric.createTestSubTask;
 
-class SubTaskHandlerTest {
+class SubTaskHandlerTest extends BaseHandlerTest {
 
-    TaskManager taskManager = new InMemoryTaskManager(Managers.getDefaultHistory());
-    HttpTaskServer taskServer = new HttpTaskServer(taskManager);
-    Gson gson = HttpTaskServer.getGson();
-    HttpClient client = HttpClient.newHttpClient();
+    private final URI subtasksUri = URI.create("http://localhost:8080/subtasks");
 
     SubTaskHandlerTest() throws IOException {
-    }
-
-    @BeforeEach
-    public void setUp() {
-        taskManager.removeTasks();
-        taskManager.removeSubTasks();
-        taskManager.removeEpics();
-        taskServer.start();
-    }
-
-    @AfterEach
-    public void shutDown() {
-        taskServer.stop();
     }
 
     @Test
@@ -56,22 +32,19 @@ class SubTaskHandlerTest {
         Epic epic = taskManager.upsertEpic(TestTaskFabric.createTestEpic());
         SubTask subTask = createTestSubTask(epic.getId());
         String subTaskBody = gson.toJson(subTask);
-        URI url = URI.create("http://localhost:8080/subtasks");
-        HttpRequest request = HttpUtil.post(url, subTaskBody);
+        HttpRequest request = HttpUtil.post(subtasksUri, subTaskBody);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
-        Collection<SubTask> subTasksFromManager = taskManager.getSubTasks();
-        assertNotNull(subTasksFromManager);
-        assertEquals(1, subTasksFromManager.size());
-        AssertUtil.assertEqualsSubTask(subTask, subTasksFromManager.iterator().next());
+        Collection<SubTask> fromManager = taskManager.getSubTasks();
+        assertEquals(1, fromManager.size());
+        AssertUtil.assertEqualsSubTask(subTask, fromManager.iterator().next());
     }
 
     @Test
     public void postSubTaskWithoutEpic() throws IOException, InterruptedException {
         SubTask subTask = createTestSubTask(0);
         String subTaskBody = gson.toJson(subTask);
-        URI url = URI.create("http://localhost:8080/subtasks");
-        HttpRequest request = HttpUtil.post(url, subTaskBody);
+        HttpRequest request = HttpUtil.post(subtasksUri, subTaskBody);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(406, response.statusCode());
         assertTrue(taskManager.getSubTasks().isEmpty());
@@ -94,15 +67,13 @@ class SubTaskHandlerTest {
         );
         taskManager.upsertSubTask(subTask1);
         String body = gson.toJson(subTask2);
-        URI url = URI.create("http://localhost:8080/subtasks");
-        HttpRequest request = HttpUtil.post(url, body);
+        HttpRequest request = HttpUtil.post(subtasksUri, body);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(406, response.statusCode());
-        Collection<SubTask> subTasksFromManager = taskManager.getSubTasks();
-        assertNotNull(subTasksFromManager);
-        assertEquals(1, subTasksFromManager.size());
-        assertEquals(subTask1.getId(), subTasksFromManager.iterator().next().getId());
-        AssertUtil.assertEqualsSubTask(subTask1, subTasksFromManager.iterator().next());
+        Collection<SubTask> fromManager = taskManager.getSubTasks();
+        assertEquals(1, fromManager.size());
+        assertEquals(subTask1.getId(), fromManager.iterator().next().getId());
+        AssertUtil.assertEqualsSubTask(subTask1, fromManager.iterator().next());
     }
 
     @Test
@@ -122,24 +93,27 @@ class SubTaskHandlerTest {
                         epic.getId()
                 )
         );
-        URI url = URI.create("http://localhost:8080/subtasks");
-        HttpRequest request = HttpUtil.get(url);
+        HttpRequest request = HttpUtil.get(subtasksUri);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-
         List<SubTask> fromManager = List.copyOf(taskManager.getSubTasks());
         List<SubTask> fromServer = gson.fromJson(
                 response.body(),
                 new TypeToken<List<SubTask>>() {
                 }.getType()
         );
-
-        assertNotNull(fromServer);
         assertIterableEquals(fromManager, fromServer);
-
         for (int i = 0; i < fromManager.size(); i++) {
             AssertUtil.assertEqualsSubTask(fromServer.get(i), fromManager.get(i));
         }
+    }
+
+    @Test
+    public void getSubTasksEmpty() throws IOException, InterruptedException {
+        HttpRequest request = HttpUtil.get(subtasksUri);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode());
+        assertTrue(taskManager.getSubTasks().isEmpty());
     }
 
     @Test
