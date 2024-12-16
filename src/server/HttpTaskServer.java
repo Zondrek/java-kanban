@@ -1,30 +1,41 @@
 package server;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpServer;
 import manager.task.TaskManager;
+import server.adapter.DateTimeAdapter;
+import server.adapter.DurationAdapter;
 import server.handler.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class HttpTaskServer {
 
     private static final int PORT = 8080;
 
+    public static Gson getGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter())
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .create();
+    }
+
     private final TaskManager taskManager;
+
+    private final Gson gson = getGson();
 
     private HttpServer server;
 
-    public HttpTaskServer(TaskManager manager) {
+    public HttpTaskServer(TaskManager manager) throws IOException {
         this.taskManager = manager;
-    }
-
-    public void main() throws IOException {
         init();
-        start();
     }
 
-    void start() {
+    public void start() {
         server.start();
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
     }
@@ -35,10 +46,10 @@ public class HttpTaskServer {
 
     private void init() throws IOException {
         server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        server.createContext("/tasks", new TaskHandler(taskManager));
-        server.createContext("/subtasks", new SubTaskHandler(taskManager));
-        server.createContext("/epics", new EpicHandler(taskManager));
-        server.createContext("/history", new HistoryHandler(taskManager));
-        server.createContext("/prioritized", new PrioritizedHandler(taskManager));
+        server.createContext("/tasks", new TaskHandler(taskManager, gson));
+        server.createContext("/subtasks", new SubTaskHandler(taskManager, gson));
+        server.createContext("/epics", new EpicHandler(taskManager, gson));
+        server.createContext("/history", new HistoryHandler(taskManager, gson));
+        server.createContext("/prioritized", new PrioritizedHandler(taskManager, gson));
     }
 }

@@ -1,9 +1,6 @@
 package server.handler;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import manager.task.TaskManager;
 import model.SubTask;
@@ -14,8 +11,8 @@ import java.util.Optional;
 
 public class SubTaskHandler extends BaseHttpHandler {
 
-    public SubTaskHandler(TaskManager taskManager) {
-        super(taskManager);
+    public SubTaskHandler(TaskManager taskManager, Gson gson) {
+        super(taskManager, gson);
     }
 
     @Override
@@ -27,7 +24,7 @@ public class SubTaskHandler extends BaseHttpHandler {
             switch (getEndpoint(method, pathParts)) {
                 case Endpoint.GET_SUBTASKS -> getSubTasks(exchange);
                 case Endpoint.GET_SUBTASK_BY_ID -> getSubTaskById(exchange, pathParts[2]);
-                case Endpoint.POST_SUBTASK -> createSubTask(exchange);
+                case Endpoint.POST_SUBTASK -> postSubTask(exchange);
                 case Endpoint.DELETE_SUBTASK -> deleteSubTask(exchange, pathParts[2]);
                 default -> sendResponse(exchange, 404);
             }
@@ -63,7 +60,7 @@ public class SubTaskHandler extends BaseHttpHandler {
         sendResponse(exchange, gson.toJson(subTask), 200);
     }
 
-    private void createSubTask(HttpExchange exchange) throws IOException {
+    private void postSubTask(HttpExchange exchange) throws IOException {
         InputStreamReader isr = new InputStreamReader(exchange.getRequestBody());
         try {
             JsonElement jsonElement = JsonParser.parseReader(isr);

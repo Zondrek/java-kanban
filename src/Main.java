@@ -64,7 +64,7 @@ public class Main {
         );
 
         HttpTaskServer server = new HttpTaskServer(taskManager);
-        server.main();
+        server.start();
     }
 }
 

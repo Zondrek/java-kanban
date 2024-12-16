@@ -1,5 +1,6 @@
 package server.handler;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -15,8 +16,8 @@ import java.util.Optional;
 
 public class EpicHandler extends BaseHttpHandler {
 
-    public EpicHandler(TaskManager taskManager) {
-        super(taskManager);
+    public EpicHandler(TaskManager taskManager, Gson gson) {
+        super(taskManager, gson);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class EpicHandler extends BaseHttpHandler {
                 case GET_EPICS -> getEpics(exchange);
                 case GET_EPIC_BY_ID -> getEpicById(exchange, pathParts[2]);
                 case GET_SUBTASKS_BY_EPIC_ID -> getSubTasksByEpicId(exchange, pathParts[2]);
-                case POST_EPIC -> createEpic(exchange);
+                case POST_EPIC -> postEpic(exchange);
                 case DELETE_EPIC -> deleteEpic(exchange, pathParts[2]);
                 default -> sendResponse(exchange, 404);
             }
@@ -76,7 +77,7 @@ public class EpicHandler extends BaseHttpHandler {
         sendResponse(exchange, gson.toJson(subTasks), 200);
     }
 
-    private void createEpic(HttpExchange exchange) throws IOException {
+    private void postEpic(HttpExchange exchange) throws IOException {
         InputStreamReader isr = new InputStreamReader(exchange.getRequestBody());
         try {
             Epic epicFromRequest = gson.fromJson(JsonParser.parseReader(isr), Epic.class);

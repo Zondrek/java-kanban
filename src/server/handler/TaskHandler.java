@@ -1,5 +1,6 @@
 package server.handler;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -13,8 +14,8 @@ import java.util.Optional;
 
 public class TaskHandler extends BaseHttpHandler {
 
-    public TaskHandler(TaskManager taskManager) {
-        super(taskManager);
+    public TaskHandler(TaskManager taskManager, Gson gson) {
+        super(taskManager, gson);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class TaskHandler extends BaseHttpHandler {
             switch (getEndpoint(method, pathParts)) {
                 case Endpoint.GET_TASKS -> getTasks(exchange);
                 case Endpoint.GET_TASK_BY_ID -> getTaskById(exchange, pathParts[2]);
-                case Endpoint.POST_TASK -> createTask(exchange);
+                case Endpoint.POST_TASK -> postTask(exchange);
                 case Endpoint.DELETE_TASK -> deleteTask(exchange, pathParts[2]);
                 default -> sendResponse(exchange, 404);
             }
@@ -62,7 +63,7 @@ public class TaskHandler extends BaseHttpHandler {
         sendResponse(exchange, gson.toJson(task), 200);
     }
 
-    private void createTask(HttpExchange exchange) throws IOException {
+    private void postTask(HttpExchange exchange) throws IOException {
         InputStreamReader isr = new InputStreamReader(exchange.getRequestBody());
         try {
             Task taskFromRequest = gson.fromJson(JsonParser.parseReader(isr), Task.class);

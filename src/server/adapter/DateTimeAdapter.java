@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateTimeAdapter extends TypeAdapter<LocalDateTime> {
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss.SSSSSS");
 
     @Override
     public void write(final JsonWriter jsonWriter, final LocalDateTime dateTime) throws IOException {
