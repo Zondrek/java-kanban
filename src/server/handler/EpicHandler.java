@@ -21,22 +21,17 @@ public class EpicHandler extends BaseHttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        try {
-            String method = exchange.getRequestMethod();
-            String path = exchange.getRequestURI().getPath();
-            String[] pathParts = path.split("/");
-            switch (getEndpoint(method, pathParts)) {
-                case GET_EPICS -> getEpics(exchange);
-                case GET_EPIC_BY_ID -> getEpicById(exchange, pathParts[2]);
-                case GET_SUBTASKS_BY_EPIC_ID -> getSubTasksByEpicId(exchange, pathParts[2]);
-                case POST_EPIC -> postEpic(exchange);
-                case DELETE_EPIC -> deleteEpic(exchange, pathParts[2]);
-                default -> sendResponse(exchange, 404);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            sendResponse(exchange, e.getMessage(), 500);
+    public void safetyHandle(HttpExchange exchange) throws IOException {
+        String method = exchange.getRequestMethod();
+        String path = exchange.getRequestURI().getPath();
+        String[] pathParts = path.split("/");
+        switch (getEndpoint(method, pathParts)) {
+            case GET_EPICS -> getEpics(exchange);
+            case GET_EPIC_BY_ID -> getEpicById(exchange, pathParts[2]);
+            case GET_SUBTASKS_BY_EPIC_ID -> getSubTasksByEpicId(exchange, pathParts[2]);
+            case POST_EPIC -> postEpic(exchange);
+            case DELETE_EPIC -> deleteEpic(exchange, pathParts[2]);
+            default -> sendResponse(exchange, 404);
         }
     }
 

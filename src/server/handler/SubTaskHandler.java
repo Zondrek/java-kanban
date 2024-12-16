@@ -16,21 +16,16 @@ public class SubTaskHandler extends BaseHttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        try {
-            String method = exchange.getRequestMethod();
-            String path = exchange.getRequestURI().getPath();
-            String[] pathParts = path.split("/");
-            switch (getEndpoint(method, pathParts)) {
-                case Endpoint.GET_SUBTASKS -> getSubTasks(exchange);
-                case Endpoint.GET_SUBTASK_BY_ID -> getSubTaskById(exchange, pathParts[2]);
-                case Endpoint.POST_SUBTASK -> postSubTask(exchange);
-                case Endpoint.DELETE_SUBTASK -> deleteSubTask(exchange, pathParts[2]);
-                default -> sendResponse(exchange, 404);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            sendResponse(exchange, e.getMessage(), 500);
+    public void safetyHandle(HttpExchange exchange) throws IOException {
+        String method = exchange.getRequestMethod();
+        String path = exchange.getRequestURI().getPath();
+        String[] pathParts = path.split("/");
+        switch (getEndpoint(method, pathParts)) {
+            case Endpoint.GET_SUBTASKS -> getSubTasks(exchange);
+            case Endpoint.GET_SUBTASK_BY_ID -> getSubTaskById(exchange, pathParts[2]);
+            case Endpoint.POST_SUBTASK -> postSubTask(exchange);
+            case Endpoint.DELETE_SUBTASK -> deleteSubTask(exchange, pathParts[2]);
+            default -> sendResponse(exchange, 404);
         }
     }
 
@@ -115,5 +110,7 @@ public class SubTaskHandler extends BaseHttpHandler {
         return Endpoint.UNKNOWN;
     }
 
-    private enum Endpoint {GET_SUBTASKS, GET_SUBTASK_BY_ID, POST_SUBTASK, DELETE_SUBTASK, UNKNOWN}
+    private enum Endpoint {
+        GET_SUBTASKS, GET_SUBTASK_BY_ID, POST_SUBTASK, DELETE_SUBTASK, UNKNOWN
+    }
 }

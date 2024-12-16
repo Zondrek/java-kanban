@@ -19,21 +19,16 @@ public class TaskHandler extends BaseHttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        try {
-            String method = exchange.getRequestMethod();
-            String path = exchange.getRequestURI().getPath();
-            String[] pathParts = path.split("/");
-            switch (getEndpoint(method, pathParts)) {
-                case Endpoint.GET_TASKS -> getTasks(exchange);
-                case Endpoint.GET_TASK_BY_ID -> getTaskById(exchange, pathParts[2]);
-                case Endpoint.POST_TASK -> postTask(exchange);
-                case Endpoint.DELETE_TASK -> deleteTask(exchange, pathParts[2]);
-                default -> sendResponse(exchange, 404);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            sendResponse(exchange, e.getMessage(), 500);
+    public void safetyHandle(HttpExchange exchange) throws IOException {
+        String method = exchange.getRequestMethod();
+        String path = exchange.getRequestURI().getPath();
+        String[] pathParts = path.split("/");
+        switch (getEndpoint(method, pathParts)) {
+            case Endpoint.GET_TASKS -> getTasks(exchange);
+            case Endpoint.GET_TASK_BY_ID -> getTaskById(exchange, pathParts[2]);
+            case Endpoint.POST_TASK -> postTask(exchange);
+            case Endpoint.DELETE_TASK -> deleteTask(exchange, pathParts[2]);
+            default -> sendResponse(exchange, 404);
         }
     }
 
@@ -112,5 +107,7 @@ public class TaskHandler extends BaseHttpHandler {
         return Endpoint.UNKNOWN;
     }
 
-    private enum Endpoint {GET_TASKS, GET_TASK_BY_ID, POST_TASK, DELETE_TASK, UNKNOWN}
+    private enum Endpoint {
+        GET_TASKS, GET_TASK_BY_ID, POST_TASK, DELETE_TASK, UNKNOWN
+    }
 }

@@ -23,6 +23,18 @@ abstract class BaseHttpHandler implements HttpHandler {
         this.gson = gson;
     }
 
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+        try {
+            safetyHandle(exchange);
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendResponse(exchange, 500);
+        }
+    }
+
+    protected abstract void safetyHandle(HttpExchange exchange) throws IOException;
+
     protected void sendResponse(HttpExchange exchange, String text, int code) throws IOException {
         byte[] resp = text.getBytes(DEFAULT_CHARSET);
         exchange.getResponseHeaders().add("Content-Type", DEFAULT_CONTENT_TYPE);
