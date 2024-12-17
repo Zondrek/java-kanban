@@ -17,13 +17,6 @@ public class HttpTaskServer {
 
     private static final int PORT = 8080;
 
-    public static Gson getGson() {
-        return new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter())
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .create();
-    }
-
     private final TaskManager taskManager;
 
     private final Gson gson = getGson();
@@ -33,6 +26,13 @@ public class HttpTaskServer {
     public HttpTaskServer(TaskManager manager) throws IOException {
         this.taskManager = manager;
         init();
+    }
+
+    public static Gson getGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter())
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .create();
     }
 
     public void start() {
